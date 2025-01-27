@@ -1,66 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
-import Card from "./Card.tsx";
-import { Item } from "../assets/card.types.ts";
-import { useState } from "react";
-import { Cart } from "../assets/Cart.types.ts";
-import NavBar from "./navBar.tsx";
+import { useNavigate } from "react-router";
 function useData() {
   return [
-    {
-      id: 1,
-      image:
-        "https://assets.bonappetit.com/photos/5ca534485e96521ff23b382b/1:1/w_2560%2Cc_limit/chocolate-chip-cookie.jpg",
-      name: "Cookie",
-      price: "1.50",
-      size: 500,
-    },
-    {
-      id: 2,
-      image:
-        "https://www.rainbownourishments.com/wp-content/uploads/2024/02/heart-shaped-cake-decorating-tutorial-vegan-raspberry-lemon-1.jpg",
-      name: "Cake",
-      price: "2.50",
-      size: 1000,
-    },
+    { id: 1, title: "Cookie", img: "", alt: "Cookie" },
+    { id: 2, title: "Muffins", img: "", alt: "Muffins" },
+    { id: 3, title: "Cupcakes", img: "", alt: "Cupcakes" },
   ];
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const { data, status } = useQuery({ queryKey: ["data"], queryFn: useData });
-  const [cart, setCart] = useState<Array<Cart>>([]);
-
-  function addToCart(itemToAdd: Item, quantity: number) {
-    const exist = cart.find((item) => item.id === itemToAdd.id);
-    if (exist === undefined) {
-      setCart((current) => [...current, { ...itemToAdd, quantity }]);
-    } else {
-      const newCart = cart.map((item) => {
-        if (item.id === itemToAdd.id) {
-          item.quantity = quantity;
-        }
-        return item;
-      });
-      setCart(newCart);
-    }
-  }
-
-  function checkout() {
-    console.log("Route to payment...");
-    console.log(cart);
-  }
 
   return (
     <>
-      <NavBar cart={cart} />
-      <div className="flex flex-col justify-center items-center">
-        <h1 className="text-3xl underline pb-4">Catalog</h1>
-        <div className="grid grid-cols-2 gap-4">
+      <div className="flex flex-col justify-center items-center pt-5">
+        <div className="rounded-md border border-purple-300 w-4/5">
+          <img src="" alt="PromoBundles"></img>
+          <div>Promo Bundles</div>
+        </div>
+        <div className="grid grid-cols-2 gap-28 pt-5">
           {status === "success" &&
             data.map((item) => (
-              <Card data={item} addToCart={addToCart} key={item.id} />
+              <div
+                key={item.id}
+                className="rounded-md border border-purple-400"
+                onClick={() => navigate(`/product/${item.id}`)}
+              >
+                <img src={item.img} alt={item.alt}></img>
+                <div>{item.title}</div>
+              </div>
             ))}
         </div>
-        <button onClick={checkout}>Checkout</button>
       </div>
     </>
   );
